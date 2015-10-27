@@ -234,17 +234,20 @@ for (year in 1:length(years)) {
     standout = c(159)
     plot(load1[1, ], load3[1, ], col = "white", xlab = "Loadings on factor 1 of 1% tau level", 
         ylab = "Loadings on factor 1 of 99% tau level", cex.lab = 1.2)
-    points(sort(load1[1, ]), load3[1, order(load1[1, ])], pch = 20, col = rgb(as.numeric(data.matrix(longi[order(load1[1, 
+    points(sort(load1[1, ]), load3[1, order(load1[1, ])], pch = 20, 
+        col = rgb(as.numeric(data.matrix(longi[order(load1[1, 
         ])]))/max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load1[1, 
         ])]))/max(as.numeric(data.matrix(lati))), rep(0, 159)))
     text(sort(load1[1, ])[standout] - 0.01, load3[1, order(load1[1, ])][standout] + 
-        0.02, labels = name.sta[order(load1[1, ])][standout], cex = 1.2, col = rgb(as.numeric(data.matrix(longi[order(load1[1, 
+        0.02, labels = name.sta[order(load1[1, ])][standout], cex = 1.2, 
+        col = rgb(as.numeric(data.matrix(longi[order(load1[1, 
         ])[standout]]))/max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load1[1, 
         ])[standout]]))/max(as.numeric(data.matrix(lati))), 0))
     text(load1[1, order(load3[1, ])][standout] + 0.05, sort(load3[1, ])[standout], 
-        labels = name.sta[order(load3[1, ])][standout], cex = 1.2, col = rgb(as.numeric(data.matrix(longi[order(load3[1, 
-            ])[standout]]))/max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load3[1, 
-            ])[standout]]))/max(as.numeric(data.matrix(lati))), 0))
+        labels = name.sta[order(load3[1, ])][standout], cex = 1.2, 
+        col = rgb(as.numeric(data.matrix(longi[order(load3[1, 
+        ])[standout]]))/max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load3[1, 
+        ])[standout]]))/max(as.numeric(data.matrix(lati))), 0))
     text(sort(load1[1, ])[1], load3[1, order(load1[1, ])][1] - 0.005, labels = name.sta[order(load1[1, 
         ])][1], cex = 1.2, col = rgb(as.numeric(data.matrix(longi[order(load1[1, 
         ])[1]]))/max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load1[1, 
