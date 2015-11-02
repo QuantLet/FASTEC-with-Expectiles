@@ -1,26 +1,3 @@
-# --------------------------------------------------------------------- 
-# Quantlet:      FASTEC with Expectiles
-# ---------------------------------------------------------------------
-# Published in:
-# ---------------------------------------------------------------------
-# Description:   Solve the optimization problem of smooth convex  
-#                function with nonsmooth convex regularizer by FISTA  
-#                (Fast Iterative Shrinkage Thresholding Algorithm).
-#                Use the expectile loss function and nuclear norm
-#                to do the factor analysis for the Chinese temperature
-#                data from 1957 to 2009.
-# --------------------------------------------------------------------- 
-# Inputs:        
-# --------------------------------------------------------------------- 
-# Output:        
-# ---------------------------------------------------------------------  
-# See also:      FASTECSAMCVaR, FASTECChinaTemper2008
-# ---------------------------------------------------------------------
-# Keywords:      expectile, loss function, optimization, nuclear norm,
-#                iterative, factor analysis 
-# --------------------------------------------------------------------- 
-# Author:        Chen Huang, Shih-Kang Chao
-
 # clear history
 rm(list = ls(all = TRUE))
 graphics.off()
@@ -43,13 +20,13 @@ mer = function(Y, X, tau, lambda, epsilon = 10^(-6), itt = 2000) {
     for (r in 1:p) {
         for (s in 1:m) {
             for (i in 1:n) {
-                w  = w + max(2 * tau, 2 * (1 - tau)) * X[i, r]^2
+                w = w + max(2 * tau, 2 * (1 - tau)) * X[i, r]^2
             }
             D[r, ] = rep((m * n)^(-1) * w, 1, m)
-            w      = 0
+            w = 0
         }
     }
-    L = norm(D, type = "2")
+    L       = norm(D, type = "2")
     Omega   = matrix(0, nrow = p, ncol = m)
     delta   = 1  # step size
     error   = 1e+07
@@ -105,33 +82,32 @@ G.er = function(A, Y, X, tau) {
     G
 }
 
-## Input Data 
-## setwd("...")
-temper    = read.table("temperature_data.txt")
-name      = read.table("stations_info.txt")
-name.sta  = name$V2[-1]
-lati      = name$V3[-1]
-longi     = name$V4[-1]
-name      = name[-1, ]
-temper    = temper[-1, -1]
-years     = c(1957:2009)
+## Input Data setwd('...')
+temper     = read.table("temperature_data.txt")
+name       = read.table("stations_info.txt")
+name.sta   = name$V2[-1]
+lati       = name$V3[-1]
+longi      = name$V4[-1]
+name       = name[-1, ]
+temper     = temper[-1, -1]
+years      = c(1957:2009)
 ## Parameter
-p         = ceiling(365^0.4)
-n         = 365
+p          = ceiling(365^0.4)
+n          = 365
 for (year in 1:length(years)) {
-    data  = temper[c((365 * year - 364):(365 * year)), ]
+    data   = temper[c((365 * year - 364):(365 * year)), ]
     ## Main Code
-    xx    = seq(0, 1, length = 365)
-    X.fac = bs(xx, df = p, intercept = TRUE)
-    X     = matrix(0, nrow = n, ncol = 0)
+    xx     = seq(0, 1, length = 365)
+    X.fac  = bs(xx, df = p, intercept = TRUE)
+    X      = matrix(0, nrow = n, ncol = 0)
     for (i in 1:p) {
-        X = cbind(X, X.fac[, i])
+        X  = cbind(X, X.fac[, i])
     }
-    k     = 0
-    Y     = data.matrix(data)  # transform from data frame to matrix
-    m     = dim(Y)[2]
-    sig_x = sqrt(norm(X, type = "F")/n)
-    TAU   = c(0.01, 0.5, 0.99)
+    k      = 0
+    Y      = data.matrix(data)  # transform from data frame to matrix
+    m      = dim(Y)[2]
+    sig_x  = sqrt(norm(X, type = "F")/n)
+    TAU    = c(0.01, 0.5, 0.99)
     
     ## Remove trend
     YY     = numeric(0)
@@ -154,7 +130,7 @@ for (year in 1:length(years)) {
             train_X  = X[-vali_ind, ]
             train_Y  = Y[-vali_ind, ]
             fit      = mer(Y = train_Y, X = train_X, tau = tau, epsilon = 1e-06, lambda = lamb, 
-                 itt = 1000)
+                itt  = 1000)
             for (i in 1:n) {
                 for (j in 1:m) {
                   err = c(err, fit$loss)
@@ -194,8 +170,8 @@ for (year in 1:length(years)) {
     pc3 = pc3[, order(varipc3, decreasing = TRUE)]
     
     ## New portion of variance
-    varipc1n  = colVars(pc1)
-    varipc3n  = colVars(pc3)
+    varipc1n = colVars(pc1)
+    varipc3n = colVars(pc3)
     portion1n = numeric(0)
     for (k in 1:8) {
         portion1n[k] = sum(varipc1n[1:k])/sum(varipc1n)
@@ -234,20 +210,17 @@ for (year in 1:length(years)) {
     standout = c(159)
     plot(load1[1, ], load3[1, ], col = "white", xlab = "Loadings on factor 1 of 1% tau level", 
         ylab = "Loadings on factor 1 of 99% tau level", cex.lab = 1.2)
-    points(sort(load1[1, ]), load3[1, order(load1[1, ])], pch = 20, 
-        col = rgb(as.numeric(data.matrix(longi[order(load1[1, 
+    points(sort(load1[1, ]), load3[1, order(load1[1, ])], pch = 20, col = rgb(as.numeric(data.matrix(longi[order(load1[1, 
         ])]))/max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load1[1, 
         ])]))/max(as.numeric(data.matrix(lati))), rep(0, 159)))
     text(sort(load1[1, ])[standout] - 0.01, load3[1, order(load1[1, ])][standout] + 
-        0.02, labels = name.sta[order(load1[1, ])][standout], cex = 1.2, 
-        col = rgb(as.numeric(data.matrix(longi[order(load1[1, 
+        0.02, labels = name.sta[order(load1[1, ])][standout], cex = 1.2, col = rgb(as.numeric(data.matrix(longi[order(load1[1, 
         ])[standout]]))/max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load1[1, 
         ])[standout]]))/max(as.numeric(data.matrix(lati))), 0))
     text(load1[1, order(load3[1, ])][standout] + 0.05, sort(load3[1, ])[standout], 
-        labels = name.sta[order(load3[1, ])][standout], cex = 1.2, 
-        col = rgb(as.numeric(data.matrix(longi[order(load3[1, 
-        ])[standout]]))/max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load3[1, 
-        ])[standout]]))/max(as.numeric(data.matrix(lati))), 0))
+        labels = name.sta[order(load3[1, ])][standout], cex = 1.2, col = rgb(as.numeric(data.matrix(longi[order(load3[1, 
+            ])[standout]]))/max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load3[1, 
+            ])[standout]]))/max(as.numeric(data.matrix(lati))), 0))
     text(sort(load1[1, ])[1], load3[1, order(load1[1, ])][1] - 0.005, labels = name.sta[order(load1[1, 
         ])][1], cex = 1.2, col = rgb(as.numeric(data.matrix(longi[order(load1[1, 
         ])[1]]))/max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load1[1, 
@@ -255,17 +228,17 @@ for (year in 1:length(years)) {
     
     ## Plot the compass
     par(mfrow = c(1, 1), oma = c(1, 1, 0, 0), mar = c(2, 1.8, 0, 0), mgp = c(1.5, 
-                                                                             0.5, 0), xpd = NA)
+        0.5, 0), xpd = NA)
     plot(seq(min(as.numeric(data.matrix(longi)))/max(as.numeric(data.matrix(longi))), 
-             1, len = 100), seq(min(as.numeric(data.matrix(lati)))/max(as.numeric(data.matrix(lati))), 
-                                1, len = 100), col = "white", axes = FALSE, xlab = "", ylab = "", type = "l", 
-         asp = 1, xlim = c(0, 1.5), ylim = c(0, 1.5))
+        1, len = 100), seq(min(as.numeric(data.matrix(lati)))/max(as.numeric(data.matrix(lati))), 
+        1, len = 100), col = "white", axes = FALSE, xlab = "", ylab = "", type = "l", 
+        asp = 1, xlim = c(0, 1.5), ylim = c(0, 1.5))
     x = rep(seq(min(as.numeric(data.matrix(longi)))/max(as.numeric(data.matrix(longi))), 
-                1, len = 100), 100)
+        1, len = 100), 100)
     y = rep(0, 10000)
     for (i in 1:100) {
-      y[((i - 1) * 100 + 1):(i * 100)] = seq(min(as.numeric(data.matrix(longi)))/max(as.numeric(data.matrix(longi))), 
-                                             1, len = 100)[i]
+        y[((i - 1) * 100 + 1):(i * 100)] = seq(min(as.numeric(data.matrix(longi)))/max(as.numeric(data.matrix(longi))), 
+            1, len = 100)[i]
     }
     points(x, y, col = rgb(x, y, rep(0, 10000)))
     lines(seq(min(x) - 0.1, max(x) + 0.1, len = 10000), rep(median(y), 10000))
