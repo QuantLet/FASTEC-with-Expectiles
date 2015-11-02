@@ -36,7 +36,7 @@ Datafile : 'temperature_data.txt, stations_info.txt'
 ![Picture1](4factors_2009.png)
 ![Picture2](loadings_2009.png)
 ![Picture3](compass.png)
-![Picture4](chinesemap.png)
+![Picture4](chinesemap_2009.png)
 
 ```R
 # clear history
