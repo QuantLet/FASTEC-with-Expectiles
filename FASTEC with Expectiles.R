@@ -243,6 +243,10 @@ for (year in 1:length(years)) {
     points(x, y, col = rgb(x, y, rep(0, 10000)))
     lines(seq(min(x) - 0.1, max(x) + 0.1, len = 10000), rep(median(y), 10000))
     lines(rep(median(x), 10000), seq(min(y) - 0.1, max(y) + 0.1, len = 10000))
+    text(min(x) - 0.2, median(y), labels = "W", cex = 1.5)
+    text(max(x) + 0.2, median(y), labels = "E", cex = 1.5)
+    text(median(x), min(y) - 0.2, labels = "S", cex = 1.5)
+    text(median(x), max(y) + 0.2, labels = "N", cex = 1.5)
     
     ## Three sample extreme locations on map
     index = c(order(load1[1, ])[standout], order(load3[1, ])[standout], order(load1[1, 
