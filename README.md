@@ -29,6 +29,8 @@ See also :
 Author : 
 - Chen Huang, Shih-Kang Chao
 
+Submitted : Thu, November 5 2015 by Chen Huang
+
 Datafile : 'temperature_data.txt, stations_info.txt'
 
 ```
