@@ -26,8 +26,7 @@ See also :
 - FASTECSAMCVaR
 - FASTECChinaTemper2008
 
-Author : 
-- Chen Huang, Shih-Kang Chao
+Author : Chen Huang, Shih-Kang Chao
 
 Submitted : Thu, November 5 2015 by Chen Huang
 
