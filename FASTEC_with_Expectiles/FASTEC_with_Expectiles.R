@@ -148,9 +148,9 @@ for (year in 1:length(years)) {
     lamb3 = optimize(cv.lambda, c(1e-07, 1), X = X, Y = Y, tau = TAU[3])$minimum
     
     system.time(fit1 <- mer(Y = Y, X = X, tau = TAU[1], epsilon = 1e-06, lambda = lamb1, 
-        itt = 1000))
+        itt = 2000))
     system.time(fit3 <- mer(Y = Y, X = X, tau = TAU[3], epsilon = 1e-06, lambda = lamb3, 
-        itt = 1000))
+        itt = 2000))
     
     ## Discussion
     
