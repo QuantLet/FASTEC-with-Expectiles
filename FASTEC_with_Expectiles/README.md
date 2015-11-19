@@ -1,12 +1,12 @@
 
 ![http://quantnet.wiwi.hu-berlin.de/style/banner.png](http://quantnet.wiwi.hu-berlin.de/style/banner.png)
 
-## ![qlogo](http://quantnet.wiwi.hu-berlin.de/graphics/quantlogo.png) **FASTEC with Expectiles**
+## ![qlogo](http://quantnet.wiwi.hu-berlin.de/graphics/quantlogo.png) **FASTEC_with_Expectiles**
 
 
 ```yaml
 
-Name of QuantLet : FASTEC with Expectiles
+Name of QuantLet : FASTEC_with_Expectiles
 
 Published in : FASTEC-with-Expectiles
 

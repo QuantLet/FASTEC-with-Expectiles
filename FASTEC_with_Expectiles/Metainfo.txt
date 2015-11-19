@@ -1,5 +1,5 @@
 
-Name of QuantLet : FASTEC with Expectiles
+Name of QuantLet : FASTEC_with_Expectiles
 
 Published in : FASTEC-with-Expectiles
 
