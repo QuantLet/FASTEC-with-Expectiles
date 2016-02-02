@@ -16,18 +16,7 @@ mer = function(Y, X, tau, lambda, epsilon = 10^(-6), itt = 2000) {
     m = ncol(Y)
     n = nrow(Y)
     p = ncol(X)
-    w = 0
-    D = matrix(0, p, m)
-    for (r in 1:p) {
-        for (s in 1:m) {
-            for (i in 1:n) {
-                w = w + max(2 * tau, 2 * (1 - tau)) * X[i, r]^2
-            }
-            D[r, ] = rep((m * n)^(-1) * w, 1, m)
-            w = 0
-        }
-    }
-    L       = norm(D, type = "2")
+    L       = 2 * (m * n)^(-1) * max(tau, (1 - tau)) * norm(X, type = "F")^2
     Omega   = matrix(0, nrow = p, ncol = m)
     delta   = 1  # step size
     error   = 1e+07
