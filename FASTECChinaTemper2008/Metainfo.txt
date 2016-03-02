@@ -4,7 +4,7 @@ Name of QuantLet : FASTECChinaTemper2008
 Published in : FASTEC-with-Expectiles
 
 Description : 'Reproduces the empirical results of Chinese temperature of 2008 in the
-paper FASTEC: Factorizable sparse tail event curves by Chao, Haerdle and Yuan (2015),
+paper FASTEC, Factorizable sparse tail event curves by Chao, Haerdle and Yuan (2015),
 including plot of temperature curves and tau-spread analysis.'
 
 Keywords : 
