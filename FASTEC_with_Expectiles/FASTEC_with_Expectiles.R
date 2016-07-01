@@ -80,11 +80,12 @@ lati       = name$V3[-1]
 longi      = name$V4[-1]
 name       = name[-1, ]
 temper     = temper[-1, -1]
-years      = c(1957:2009)
+years     = c(1957:2009)
 ## Parameter
 p          = ceiling(365^0.4)
 n          = 365
-for (year in 1:length(years)) {
+year       = legnth(years)
+#for (year in 1:length(years)) {
     data   = temper[c((365 * year - 364):(365 * year)), ]
     ## Main Code
     xx     = seq(0, 1, length = 365)
@@ -258,4 +259,4 @@ for (year in 1:length(years)) {
             100/max(as.numeric(data.matrix(lati[order(load1[1, ])]))), 0), cex = 1.5)
     }
     title(main = years[year])
-} 
+#} 
