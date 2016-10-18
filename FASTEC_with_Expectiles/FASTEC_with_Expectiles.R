@@ -111,27 +111,22 @@ year       = legnth(years)
     ## Cross-validation for the tuning parameter
     cv.lambda    = function(lamb, X, Y, tau) {
         K        = 5
-        ERR      = 0
+        LOSS     = 0
         groupnum = floor(dim(X)[1]/K)
+        r.idx    = sample(1:dim(X)[1], dim(X)[1], replace=F)
         for (k in 1:K) {
-            err      = 0
-            vali_ind = c((groupnum * k - groupnum + 1):(groupnum * k))
-            vali_Y   = Y[-vali_ind, ]
-            vali_X   = X[-vali_ind, ]
-            train_X  = X[-vali_ind, ]
-            train_Y  = Y[-vali_ind, ]
-            fit      = mer(Y = train_Y, X = train_X, tau = tau, epsilon = 1e-06, lambda = lamb, 
-                itt  = 1000)
-            for (i in 1:n) {
-                for (j in 1:m) {
-                  err = c(err, fit$loss)
-                }
-            }
-            err = sum(err)
-            ERR = c(ERR, err)
+            vali_idx = r.idx[(groupnum * k - groupnum + 1):(groupnum * k)]
+            vali_Y   = Y[vali_idx, ]
+            vali_X   = X[vali_idx, ]
+            train_X  = X[-vali_idx, ]
+            train_Y  = Y[-vali_idx, ]
+            n        = dim(vali_Y)[1]
+            m        = dim(vali_Y)[2]
+            fit      = mer(Y = train_Y, X = train_X, tau = tau, epsilon = 1e-06, lambda = lamb, itt  = 1000)
+            loss     = sum((tau - matrix(as.numeric(vali_Y - vali_X %*% fit$Gamma < 0), n, m)) * (vali_Y - vali_X %*% fit$Gamma)^2)
+            LOSS     = c(LOSS, loss)
         }
-        ERR     = ERR[-1]
-        mean(ERR)
+        sum(LOSS)
     }
     
     lamb1 = optimize(cv.lambda, c(1e-07, 1), X = X, Y = Y, tau = TAU[1])$minimum
