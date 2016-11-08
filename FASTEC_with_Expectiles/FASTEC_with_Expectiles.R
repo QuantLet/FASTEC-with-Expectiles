@@ -27,49 +27,37 @@ mer = function(Y, X, tau, lambda, epsilon = 10^(-6), itt = 2000) {
     A_      = matrix(0, nrow = p, ncol = m)
     ## Main iteration
     while (it < itt & error > epsilon) {
-        S         = svd(Omega - L^(-1) * G.er(Omega, Y, X, tau), nu = p, nv = m)
+        S         = svd(Omega - L^(-1) * G.er(Omega, Y, X, tau, m = m, n = n), nu = p, nv = m)
         temp.sv   = S$d - (lambda/L)
         temp.sv[temp.sv < 0] = 0
         A         = S$u %*% diag(temp.sv, nrow = p, ncol = m) %*% t(S$v)
         delta.for = (1 + sqrt(1 + 4 * delta^2))/2
         Omega     = A + (delta - 1)/(delta.for) * (A - A_)
-        error     = L.error - (sum((tau - matrix(as.numeric(Y - X %*% A < 0), n, m)) * 
+        error     = L.error - (m * n)^(-1) * (sum(abs(tau - matrix(as.numeric(Y - X %*% A < 0), n, m)) * 
             (Y - X %*% A)^2) + lambda * sum(temp.sv))
-        L.error   = sum((tau - matrix(as.numeric(Y - X %*% A < 0), n, m)) * (Y - X %*% 
+        L.error   = (m * n)^(-1) * sum(abs(tau - matrix(as.numeric(Y - X %*% A < 0), n, m)) * (Y - X %*% 
             A)^2) + lambda * sum(temp.sv)
         A_        = A
         delta     = delta.for
         it        = it + 1
-        print(c(error, delta, sum((tau - matrix(as.numeric(Y - X %*% A < 0), n, m)) * 
+        print(c(error, delta, (m * n)^(-1) * sum(abs(tau - matrix(as.numeric(Y - X %*% A < 0), n, m)) * 
             (Y - X %*% A)^2), sum(temp.sv)))
         # if(it < 10){error=1000000}
     }
-    list(Gamma = A, d = S$d, U = S$u, V = S$v, error = error, loss = sum((tau - matrix(as.numeric(Y - 
+    list(Gamma = A, d = S$d, U = S$u, V = S$v, error = error, loss = (m * n)^(-1) * sum(abs(tau - matrix(as.numeric(Y - 
         X %*% A < 0), n, m)) * (Y - X %*% A)^2), norm = sum(temp.sv), lambda = lambda, 
         iteration = it)
 }
 ## Function: Computing the gradient of the expectile loss function
-G.er = function(A, Y, X, tau) {
-    m = ncol(Y)
-    n = nrow(Y)
-    p = ncol(X)
-    w = 0
-    G = matrix(0, p, m)
-    for (r in 1:p) {
-        for (s in 1:m) {
-            for (i in 1:n) {
-                u   = Y[i, s] - X[i, ] %*% A[, s]
-                w   = w + (if (u > 0) {
-                  2 * tau * u
-                } else {
-                  2 * (1 - tau) * u
-                }) * X[i, r]
-            }
-            G[r, s] = (m * n)^(-1) * w
-            w       = 0
-        }
-    }
-    G
+G.er = function(A, Y, X, tau, m, n) {
+  W          = (Y - X %*% A)
+  index_p    = which(W > 0, arr.ind = TRUE)
+  W[index_p] = 2 * tau
+  index_n    = which(W < 0, arr.ind = TRUE)
+  W[index_n] = 2 - 2 * tau
+  W          = W * (Y - X %*% A)
+  temp       = (-t(X) %*% W)/(m * n)
+  temp
 }
 
 ## Input Data setwd('...')
@@ -84,7 +72,7 @@ years     = c(1957:2009)
 ## Parameter
 p          = ceiling(365^0.4)
 n          = 365
-year       = legnth(years)
+year       = length(years)
 #for (year in 1:length(years)) {
     data   = temper[c((365 * year - 364):(365 * year)), ]
     ## Main Code
@@ -122,15 +110,17 @@ year       = legnth(years)
             train_Y  = Y[-vali_idx, ]
             n        = dim(vali_Y)[1]
             m        = dim(vali_Y)[2]
-            fit      = mer(Y = train_Y, X = train_X, tau = tau, epsilon = 1e-06, lambda = lamb, itt  = 1000)
-            loss     = sum((tau - matrix(as.numeric(vali_Y - vali_X %*% fit$Gamma < 0), n, m)) * (vali_Y - vali_X %*% fit$Gamma)^2)
+            fit      = mer(Y = train_Y, X = train_X, tau = tau, epsilon = 1e-06, lambda = lamb, 
+                           itt  = 2000)
+            loss     = sum(abs(tau - matrix(as.numeric(vali_Y - vali_X %*% fit$Gamma < 0), n, m)) 
+                           * (vali_Y - vali_X %*% fit$Gamma)^2)
             LOSS     = c(LOSS, loss)
         }
         sum(LOSS)
     }
     
-    lamb1 = optimize(cv.lambda, c(1e-07, 1), X = X, Y = Y, tau = TAU[1])$minimum
-    lamb3 = optimize(cv.lambda, c(1e-07, 1), X = X, Y = Y, tau = TAU[3])$minimum
+    lamb1 = optimize(cv.lambda, c(1e-05, 1e-02), X = X, Y = Y, tau = TAU[1])$minimum
+    lamb3 = optimize(cv.lambda, c(1e-05, 1e-02), X = X, Y = Y, tau = TAU[3])$minimum
     
     system.time(fit1 <- mer(Y = Y, X = X, tau = TAU[1], epsilon = 1e-06, lambda = lamb1, 
         itt = 2000))
@@ -167,7 +157,7 @@ year       = legnth(years)
         portion3n[k] = sum(varipc3n[1:k])/sum(varipc3n)
     }
     
-    par(mfrow = c(2, 2), oma = c(0, 1, 0, 0), mar = c(2, 1.8, 1, 0), mgp = c(1.5, 
+    par(mfrow = c(2, 2), oma = c(0.5, 1, 0, 1), mar = c(2.5, 1.8, 1, 1), mgp = c(1.5, 
         0.5, 0), xpd = NA)
     
     plot(xx, pc1[, 1], type = "l", lwd = 2, main = "1st factor", xlab = "", ylab = "", 
@@ -191,40 +181,37 @@ year       = legnth(years)
     load3 = t(fit3$V)[order(varipc3, decreasing = TRUE), ]
     
     ## tau spread analysis
-    par(mfrow = c(1, 1), oma = c(1, 1, 0, 0), mar = c(2, 1.8, 0, 0), mgp = c(1.5, 
+    par(mfrow = c(1, 1), oma = c(0.5, 1, 0, 1), mar = c(2.5, 1.8, 1, 1), mgp = c(1.5, 
         0.5, 0), xpd = NA)
     standout = c(159)
     plot(load1[1, ], load3[1, ], col = "white", xlab = "Loadings on factor 1 of 1% tau level", 
         ylab = "Loadings on factor 1 of 99% tau level", cex.lab = 1.2)
-    points(sort(load1[1, ]), load3[1, order(load1[1, ])], pch = 20, col = rgb(as.numeric(data.matrix(longi[order(load1[1, 
-        ])]))/max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load1[1, 
-        ])]))/max(as.numeric(data.matrix(lati))), rep(0, 159)))
-    text(sort(load1[1, ])[standout] - 0.01, load3[1, order(load1[1, ])][standout] + 
-        0.02, labels = name.sta[order(load1[1, ])][standout], cex = 1.2, col = rgb(as.numeric(data.matrix(longi[order(load1[1, 
-        ])[standout]]))/max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load1[1, 
-        ])[standout]]))/max(as.numeric(data.matrix(lati))), 0))
-    text(load1[1, order(load3[1, ])][standout] + 0.05, sort(load3[1, ])[standout], 
-        labels = name.sta[order(load3[1, ])][standout], cex = 1.2, col = rgb(as.numeric(data.matrix(longi[order(load3[1, 
-            ])[standout]]))/max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load3[1, 
-            ])[standout]]))/max(as.numeric(data.matrix(lati))), 0))
-    text(sort(load1[1, ])[1], load3[1, order(load1[1, ])][1] - 0.005, labels = name.sta[order(load1[1, 
-        ])][1], cex = 1.2, col = rgb(as.numeric(data.matrix(longi[order(load1[1, 
-        ])[1]]))/max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load1[1, 
-        ])[1]]))/max(as.numeric(data.matrix(lati))), 0))
+    points(sort(load1[1, ]), load3[1, order(load1[1, ])], pch = 20, 
+        col = rgb(as.numeric(data.matrix(longi[order(load1[1, ])]))/max(as.numeric(data.matrix(longi))),
+        as.numeric(data.matrix(lati[order(load1[1, ])]))/max(as.numeric(data.matrix(lati))), 
+        rep(0, 159)))
+    text(sort(load1[1, ])[standout] - 0.02, load3[1, order(load1[1, ])][standout], 
+        labels = name.sta[order(load1[1, ])][standout], cex = 1.2, 
+        col = rgb(as.numeric(data.matrix(longi[order(load1[1, ])[standout]]))
+        /max(as.numeric(data.matrix(longi))), as.numeric(data.matrix(lati[order(load1[1, ])[standout]]))
+        /max(as.numeric(data.matrix(lati))), 0))
+    text(sort(load1[1, ])[1], load3[1, order(load1[1, ])][1] - 0.005, labels = 
+        name.sta[order(load1[1, ])][1], cex = 1.2, col = 
+        rgb(as.numeric(data.matrix(longi[order(load1[1, ])[1]]))/max(as.numeric(data.matrix(longi))), 
+        as.numeric(data.matrix(lati[order(load1[1, ])[1]]))/max(as.numeric(data.matrix(lati))), 0))
     
     ## Plot the compass
-    par(mfrow = c(1, 1), oma = c(1, 1, 0, 0), mar = c(2, 1.8, 0, 0), mgp = c(1.5, 
-        0.5, 0), xpd = NA)
-    plot(seq(min(as.numeric(data.matrix(longi)))/max(as.numeric(data.matrix(longi))), 
-        1, len = 100), seq(min(as.numeric(data.matrix(lati)))/max(as.numeric(data.matrix(lati))), 
-        1, len = 100), col = "white", axes = FALSE, xlab = "", ylab = "", type = "l", 
-        asp = 1, xlim = c(0, 1.5), ylim = c(0, 1.5))
-    x = rep(seq(min(as.numeric(data.matrix(longi)))/max(as.numeric(data.matrix(longi))), 
-        1, len = 100), 100)
+    par(mfrow = c(1, 1))
+    plot(seq(min(as.numeric(data.matrix(longi)))/max(as.numeric(data.matrix(longi))), 1, len = 100), 
+         seq(min(as.numeric(data.matrix(lati)))/max(as.numeric(data.matrix(lati))), 1, len = 100), 
+         col = "white", axes = FALSE, xlab = "", ylab = "", type = "l", 
+         asp = 1, xlim = c(0, 1.5), ylim = c(0, 1.5))
+    x = rep(seq(min(as.numeric(data.matrix(longi)))/max(as.numeric(data.matrix(longi))), 1, len = 100), 
+            100)
     y = rep(0, 10000)
     for (i in 1:100) {
-        y[((i - 1) * 100 + 1):(i * 100)] = seq(min(as.numeric(data.matrix(longi)))/max(as.numeric(data.matrix(longi))), 
-            1, len = 100)[i]
+        y[((i - 1) * 100 + 1):(i * 100)] = seq(min(as.numeric(data.matrix(longi)))
+                                               /max(as.numeric(data.matrix(longi))), 1, len = 100)[i]
     }
     points(x, y, col = rgb(x, y, rep(0, 10000)))
     lines(seq(min(x) - 0.1, max(x) + 0.1, len = 10000), rep(median(y), 10000))
@@ -234,24 +221,22 @@ year       = legnth(years)
     text(median(x), min(y) - 0.2, labels = "S", cex = 1.5)
     text(median(x), max(y) + 0.2, labels = "N", cex = 1.5)
     
-    ## Three sample extreme locations on map
-    index = c(order(load1[1, ])[standout], order(load3[1, ])[standout], order(load1[1, 
-        ])[1])
-    x.cor = as.numeric(data.matrix(name$V4)[c(order(load1[1, ])[standout], order(load3[1, 
-        ])[standout], order(load1[1, ])[1])])/100
-    y.cor = as.numeric(data.matrix(name$V3)[c(order(load1[1, ])[standout], order(load3[1, 
-        ])[standout], order(load1[1, ])[1])])/100
+    ## Extreme locations on map
+    index = c(order(load1[1, ])[standout], order(load1[1, ])[1])
+    x.cor = as.numeric(data.matrix(name$V4)[c(order(load1[1, ])[standout], order(load1[1, ])[1])])/100
+    y.cor = as.numeric(data.matrix(name$V3)[c(order(load1[1, ])[standout], order(load1[1, ])[1])])/100
     
-    par(mfrow = c(1, 1), oma = c(1, 1, 0, 0), mar = c(2, 1.8, 0, 0), mgp = c(1.5, 
-        0.5, 0), xpd = NA)
+    par(mfrow = c(1, 1))
     map("china")
-    points(x.cor, y.cor, lwd = 0.5, pch = 20, col = rgb(x.cor * 100/max(as.numeric(data.matrix(longi[order(load1[1, 
-        ])]))), y.cor * 100/max(as.numeric(data.matrix(lati[order(load1[1, ])]))), 
-        rep(0, 3)), cex = 1.5)
-    for (i in 1:3) {
-        text(x.cor[i], y.cor[i] + 0.9, labels = name.sta[index[i]], col = rgb(x.cor[i] * 
-            100/max(as.numeric(data.matrix(longi[order(load1[1, ])]))), y.cor[i] * 
-            100/max(as.numeric(data.matrix(lati[order(load1[1, ])]))), 0), cex = 1.5)
+    points(x.cor, y.cor, lwd = 0.5, pch = 20, 
+           col = rgb(x.cor * 100/max(as.numeric(data.matrix(longi[order(load1[1, ])]))), 
+                     y.cor * 100/max(as.numeric(data.matrix(lati[order(load1[1, ])]))), rep(0, 3)),
+           cex = 1.5)
+    for (i in 1:length(index)) {
+        text(x.cor[i], y.cor[i] + 0.9, labels = name.sta[index[i]], 
+             col = rgb(x.cor[i] * 100/max(as.numeric(data.matrix(longi[order(load1[1, ])]))), 
+                       y.cor[i] * 100/max(as.numeric(data.matrix(lati[order(load1[1, ])]))), 0), 
+             cex = 1.5)
     }
-    title(main = years[year])
+    title(main = years[year], line = -1)
 #} 
