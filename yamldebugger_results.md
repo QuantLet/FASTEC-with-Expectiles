@@ -1,0 +1,4 @@
+|Q-Quali |Q folders              |Q Names                |Descriptions stats           |Keywords stats           |Meta Info data fields    |Bad file names                                                                     |
+|:-------|:----------------------|:----------------------|:----------------------------|:------------------------|:------------------------|:----------------------------------------------------------------------------------|
+|A       |FASTEC_with_Expectiles |FASTEC_with_Expectiles |38 word(s), 230 Character(s) |6: 6 (standard), 0 (new) |q, p, a, d, k, df, s, sa |                                                                                   |
+|C       |FASTECChinaTemper2008  |FASTECChinaTemper2008  |31 word(s), 180 Character(s) |6: 6 (standard), 0 (new) |q, p, a, d, k, df, s, sa |bad Q file names!: chinese map.png, detrended temperature.png, factor loadings.png |
