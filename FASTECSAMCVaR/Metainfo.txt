@@ -1,0 +1,30 @@
+
+Name of QuantLet : FASTECSAMCVaR
+
+Published in : FASTEC-with-Expectiles
+
+Description : 'Reproduces the empirical results of financial data in the paper  
+FASTEC, Factorizable sparse tail event curves by Chao, Haerdle and Yuan (2015),
+including plot of daily log returns of 230 firms and tau-spread analysis.'
+
+Keywords : 
+- LASSO
+- quantile regression
+- sparse
+- nuclear norm
+- tail
+- variable selection
+
+See also : 
+- FASTECChinaTemper2008
+
+Author : Shih-Kang Chao
+
+Submitted : Wed, March 8 2017 by Chen Huang
+
+Datafile : 
+- Banks1.csv
+- FinancialServices1.csv
+- firminfo.csv
+- Insurance1.csv
+- vix070831-100806.csv
