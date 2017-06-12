@@ -60,6 +60,29 @@ G.er = function(A, Y, X, tau, m, n) {
   temp
 }
 
+## Cross-validation for the tuning parameter
+cv.lambda    = function(lamb, X, Y, tau) {
+  K        = 5
+  LOSS     = 0
+  groupnum = floor(dim(X)[1]/K)
+  r.idx    = sample(1:dim(X)[1], dim(X)[1], replace=F)
+  for (k in 1:K) {
+    vali_idx = r.idx[(groupnum * k - groupnum + 1):(groupnum * k)]
+    vali_Y   = Y[vali_idx, ]
+    vali_X   = X[vali_idx, ]
+    train_X  = X[-vali_idx, ]
+    train_Y  = Y[-vali_idx, ]
+    n        = dim(vali_Y)[1]
+    m        = dim(vali_Y)[2]
+    fit      = mer(Y = train_Y, X = train_X, tau = tau, epsilon = 1e-06, lambda = lamb, 
+                   itt  = 2000)
+    loss     = sum(abs(tau - matrix(as.numeric(vali_Y - vali_X %*% fit$Gamma < 0), n, m)) 
+                   * (vali_Y - vali_X %*% fit$Gamma)^2)
+    LOSS     = c(LOSS, loss)
+  }
+  sum(LOSS)
+}
+
 ## Input Data setwd('...')
 temper     = read.table("temperature_data.txt")
 name       = read.table("stations_info.txt")
@@ -96,28 +119,6 @@ year       = length(years)
     XX        = rep(xx, times = m)
     fit.trend = smooth.spline(x = XX, y = YY)
     Y         = Y - fit.trend$y  # Remove trend
-    ## Cross-validation for the tuning parameter
-    cv.lambda    = function(lamb, X, Y, tau) {
-        K        = 5
-        LOSS     = 0
-        groupnum = floor(dim(X)[1]/K)
-        r.idx    = sample(1:dim(X)[1], dim(X)[1], replace=F)
-        for (k in 1:K) {
-            vali_idx = r.idx[(groupnum * k - groupnum + 1):(groupnum * k)]
-            vali_Y   = Y[vali_idx, ]
-            vali_X   = X[vali_idx, ]
-            train_X  = X[-vali_idx, ]
-            train_Y  = Y[-vali_idx, ]
-            n        = dim(vali_Y)[1]
-            m        = dim(vali_Y)[2]
-            fit      = mer(Y = train_Y, X = train_X, tau = tau, epsilon = 1e-06, lambda = lamb, 
-                           itt  = 2000)
-            loss     = sum(abs(tau - matrix(as.numeric(vali_Y - vali_X %*% fit$Gamma < 0), n, m)) 
-                           * (vali_Y - vali_X %*% fit$Gamma)^2)
-            LOSS     = c(LOSS, loss)
-        }
-        sum(LOSS)
-    }
     
     lamb1 = optimize(cv.lambda, c(1e-05, 1e-02), X = X, Y = Y, tau = TAU[1])$minimum
     lamb3 = optimize(cv.lambda, c(1e-05, 1e-02), X = X, Y = Y, tau = TAU[3])$minimum
