@@ -4,7 +4,7 @@ delf = function(u, tau, delta) {
 }
 
 del = seq(-0.5, 0.5, length = 50)
-tau = 0.9
+tau1 = 0.9
 u   = 0.1
 plot(del, delf(u = u, tau = tau1, delta = del), type = "l", lty = 2, lwd = 2, xlab = "delta", 
     ylab = "")
