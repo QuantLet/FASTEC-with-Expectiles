@@ -89,7 +89,7 @@ dat             = as.matrix(dat)
 
 
 firminfo        = read.csv("firminfo.csv", sep = ",", dec = ".", header = TRUE, as.is = TRUE)
-vix             = read.csv("vix070831-100806.csv", sep = ",", header = TRUE)
+vix             = read.csv("vix070831_100806.csv", sep = ",", header = TRUE)
 vix.date        = as.Date(vix[, 1])
 ## Log-diff 
 dat             = (diff(log(dat))) * 100
