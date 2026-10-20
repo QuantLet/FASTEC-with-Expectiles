@@ -9,7 +9,7 @@ Name of QuantLet: Expectile_RSC
 
 Published in: FASTEC-with-Expectiles
 
-Description: Illustrates the restricted strong convexity property of expectile
+Description: Illustrates the restricted strong convexity property of expectile loss function with a particular example. The red line shows the lower error bounds.
 
 Keywords: 
 - expectile
@@ -27,7 +27,7 @@ Author: Shih-Kang Chao, Chen Huang
 
 Submitted: Sun, May 14 2017 by Chen Huang
 
-Example: tau = 0.9, error = 0.1 or -0.1 for the two dash lines, the deviation delta
+Example: tau = 0.9, error = 0.1 or -0.1 for the two dash lines, the deviation delta varies from -0.5 to -0.5.
 
 ```
 <div align="center">
