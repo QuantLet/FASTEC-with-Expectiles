@@ -9,7 +9,7 @@ Name of QuantLet: FASTEC_with_Expectiles
 
 Published in: FASTEC-with-Expectiles
 
-Description: Solves the optimization problem of smooth convex function with
+Description: Solves the optimization problem of smooth convex function with nonsmooth convex regularizer by Fast Iterative Shrinkage Thresholding Algorithm. Uses the expectile loss function and nuclear norm to do the factor analysis for the Chinese temperature data from 1957 to 2009.
 
 Keywords: 
 - expectile
