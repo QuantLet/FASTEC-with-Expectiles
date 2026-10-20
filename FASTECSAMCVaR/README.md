@@ -9,7 +9,7 @@ Name of QuantLet: FASTECSAMCVaR
 
 Published in: FASTEC-with-Expectiles
 
-Description: Reproduces the empirical results of financial data in the paper
+Description: Reproduces the empirical results of financial data in the paper FASTEC, Factorizable sparse tail event curves by Chao, Haerdle and Yuan (2015), including plot of daily log returns of 230 firms and tau-spread analysis.
 
 Keywords: 
 - LASSO
